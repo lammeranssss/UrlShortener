@@ -1,0 +1,19 @@
+# Фиксация версии (11.4) защищает от внезапных breaking changes при обновлении тега latest.
+# healthcheck гарантирует, что приложение не начнет стучаться в БД до того, как она реально будет готова принимать коннекты.
+services:
+  mariadb:
+    image: mariadb:11.4
+    container_name: urlshortener_db
+    environment:
+      MARIADB_ROOT_PASSWORD: SecretPassword123!
+      MARIADB_DATABASE: UrlShortener
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
