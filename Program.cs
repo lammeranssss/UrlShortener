@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Infrastructure.Persistence;
+using UrlShortener.Domain.Services;
+using UrlShortener.Infrastructure.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 

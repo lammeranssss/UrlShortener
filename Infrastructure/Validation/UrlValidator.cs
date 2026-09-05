@@ -53,8 +53,8 @@ public sealed class UrlValidator
 
         if (ip.AddressFamily == AddressFamily.InterNetworkV6)
         {
-            // Явная проверка типов непубличных IPv6 (RFC 4193, RFC 4291)
-            if (ip.IsIPv6LinkLocal || ip.IsIPv6SiteLocal || ip.IsIPv6UniqueLocal)
+            // Проверка диапазонов RFC 4193 (Unique Local) и RFC 4291 (Link/Site-Local, Multicast)
+            if (ip.IsIPv6LinkLocal || ip.IsIPv6SiteLocal || ip.IsIPv6UniqueLocal || ip.IsIPv6Multicast)
                 return true;
 
             if (ip.IsIPv4MappedToIPv6)
@@ -63,11 +63,14 @@ public sealed class UrlValidator
             }
             else
             {
-                if (!ip.IsIPv6GlobalUnicast)
+                byte[] v6Bytes = ip.GetAddressBytes();
+
+                // Global Unicast (RFC 4291) должен принадлежать диапазону 2000::/3.
+                // Старшие 3 бита первого байта обязаны быть равны 001 (0x20).
+                bool isGlobalUnicast = (v6Bytes[0] & 0xE0) == 0x20;
+                if (!isGlobalUnicast)
                     return true;
 
-                byte[] v6Bytes = ip.GetAddressBytes();
-                
                 // Documentation Range 2001:db8::/32 (RFC 3849)
                 if (v6Bytes[0] == 0x20 && v6Bytes[1] == 0x01 && v6Bytes[2] == 0x0d && v6Bytes[3] == 0xb8)
                     return true;
@@ -81,11 +84,11 @@ public sealed class UrlValidator
         }
 
         if (ip.AddressFamily != AddressFamily.InterNetwork) 
-            return true; // Fail-Safe: Неизвестные типы адресов блокируем
+            return true; // Fail-Safe для нетипичных семейств сокетов
 
         byte[] bytes = ip.GetAddressBytes();
 
-        // Проверка диапазона RFC 1918 (Private IPv4), 127.0.0.0/8 (Loopback) и 169.254.x.x (APIPA/Metadata)
+        // Фильтрация RFC 1918 (Private IPv4), Loopback (127.0.0.0/8) и APIPA/Metadata (169.254.x.x)
         return bytes[0] switch
         {
             10 => true,                              // 10.0.0.0/8
