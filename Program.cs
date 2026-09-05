@@ -27,6 +27,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             errorNumbersToAdd: null);
     }));
 
+builder.Services.AddSingleton<IShortCodeGenerator, CryptographicCodeGenerator>();
+builder.Services.AddSingleton<IDnsResolver, SystemDnsResolver>();
+builder.Services.AddSingleton<UrlValidator>();
+
 var app = builder.Build();
 
 app.Run();

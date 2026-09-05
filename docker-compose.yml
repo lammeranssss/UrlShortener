@@ -5,7 +5,7 @@ services:
     image: mariadb:11.4
     container_name: urlshortener_db
     environment:
-      MARIADB_ROOT_PASSWORD: SecretPassword123!
+      MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: UrlShortener
     ports:
       - "3306:3306"
