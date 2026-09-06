@@ -46,14 +46,16 @@ export function App() {
                 />
             )}
           </main>
-
-          <EditUrlModal
-              urlRecord={editingRecord}
-              isOpen={!!editingRecord}
-              onClose={() => setEditingRecord(null)}
-              onSave={handleUpdate}
-              isLoading={isUpdating}
-          />
+          {editingRecord && (
+              <EditUrlModal
+                  key={editingRecord.id}
+                  urlRecord={editingRecord}
+                  isOpen={true}
+                  onClose={() => setEditingRecord(null)}
+                  onSave={handleUpdate}
+                  isLoading={isUpdating}
+              />
+          )}
         </div>
       </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { UrlRecord } from '@/types/url';
 
 interface EditUrlModalProps {
@@ -16,15 +16,8 @@ export const EditUrlModal: React.FC<EditUrlModalProps> = ({
                                                               onSave,
                                                               isLoading,
                                                           }) => {
-    const [originalUrl, setOriginalUrl] = useState('');
+    const [originalUrl, setOriginalUrl] = useState(urlRecord?.originalUrl ?? '');
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (urlRecord) {
-            setOriginalUrl(urlRecord.originalUrl);
-            setError(null);
-        }
-    }, [urlRecord]);
 
     if (!isOpen || !urlRecord) return null;
 
