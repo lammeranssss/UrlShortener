@@ -4,6 +4,11 @@ services:
     container_name: urlshortener_prod_db
     restart: always
     environment:
+    # ВНИМАНИЕ:
+    # Fallback-значения (:-password) оставлены ИСКЛЮЧИТЕЛЬНО для выполнения
+    # требования ТЗ "запуск в 1 клик" без необходимости ручного создания .env файла.
+    # В реальной Production-среде здесь использовался бы синтаксис ${VAR?err_msg}
+    # или механизм Docker Swarm Secrets.
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-super_secret_root_pass_999}
       MARIADB_DATABASE: UrlShortenerDb
       MARIADB_USER: shortener_app
