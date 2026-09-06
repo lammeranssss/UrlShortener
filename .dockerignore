@@ -1,0 +1,12 @@
+**/.git
+**/.github
+**/.vscode
+**/.idea
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/*.user
+**/*.suo
+**/npm-debug.log*
+.DS_Store

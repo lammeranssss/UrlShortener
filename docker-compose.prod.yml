@@ -1,0 +1,61 @@
+services:
+  db:
+    image: mariadb:11.4
+    container_name: urlshortener_prod_db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-super_secret_root_pass_999}
+      MARIADB_DATABASE: UrlShortenerDb
+      MARIADB_USER: shortener_app
+      MARIADB_PASSWORD: ${DB_APP_PASSWORD:-app_secret_password_123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_prod_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migration-runner:
+    build:
+      context: .
+      dockerfile: UrlShortener/Dockerfile
+    container_name: urlshortener_prod_migrations
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=UrlShortenerDb;User=shortener_app;Password=${DB_APP_PASSWORD:-app_secret_password_123};
+    entrypoint: ["dotnet", "UrlShortener.dll", "--apply-migrations"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: UrlShortener/Dockerfile
+    container_name: urlshortener_prod_api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=UrlShortenerDb;User=shortener_app;Password=${DB_APP_PASSWORD:-app_secret_password_123};
+      - AllowedCorsOrigins__0=http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      migration-runner:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: UrlShortener.Client/Dockerfile
+    container_name: urlshortener_prod_web
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  mariadb_prod_data:
