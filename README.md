@@ -30,7 +30,7 @@
 ```bash
 # 1. Клонируйте репозиторий
 git clone [git clone https://github.com/lammeransssss/UrlShortener.git](git clone https://github.com/lammeransssss/UrlShortener.git)
-cd url-shortener
+cd UrlShortener
 ```
 
 # 2. Запустите продуктовый стек в один клик
