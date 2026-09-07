@@ -36,7 +36,7 @@ cd UrlShortener
 # 2. Запустите продуктовый стек в один клик
 
 ```bash
-docker compose -f docker-compose.prod.yml up --build -d
+docker compose -f docker-compose.yml up --build -d
 ```
 
 Приложение станет доступно по адресу: **`http://localhost:8080`**.
